@@ -5,7 +5,7 @@
 from machine import Pin, PWM
 import utime
 
-DEBUG = 111 # DEBUG levels change at 0,10,100. 0 = silent running
+DEBUG = 0 # DEBUG levels change at 0,10,100. 0 = silent running
 
 #initialise i/o
 buzzer=PWM(Pin(14))
@@ -16,8 +16,8 @@ echo = [Pin(2, Pin.IN), Pin(2, Pin.IN)]
 
 # define constants
 DELAY = 100 #ms deault time between distance checks
-MAXDIST = 50 # cm if MINDIST < distance < MAXDIST iintermittent beeping 
-MINDIST = 20 # cm if distance < MINDIST continuous tone will be heard 
+MAXDIST = 70 # cm if MINDIST < distance < MAXDIST iintermittent beeping 
+MINDIST = 15 # cm if distance < MINDIST continuous tone will be heard 
 
 #set up buzzer funnctions.Assumes PWM buzzer
 def playtone(frequency):
@@ -43,6 +43,8 @@ def ultra(sensor):
     trigger[sensor].high()
     utime.sleep_us(5)
     trigger[sensor].low()
+    #iniialise in case we fail to sense
+    signaloff = signalon = 0
     
     if DEBUG > 10: print ("sensor value",echo[sensor].value() )
     while echo[sensor].value() == 0:    
@@ -70,6 +72,7 @@ def main ():
     while True:
         # blink led
         led.toggle()
+      
         # sense distance
         distance = 1000 # start with an our of range value
         for i in range(len(trigger)):
